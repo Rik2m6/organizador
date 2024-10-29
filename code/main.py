@@ -31,34 +31,39 @@ class Application():
 
     def frame_tela(self):
         # Primeiro frame que é responsável por acomodar as informações dos tipos de cada classificação dos times.
-        self.frame_list_times = Frame(self.main, highlightbackground='black', highlightthickness=1)  # Criando o frame.
+        self.frame_list_times = Frame(self.main, highlightbackground='#6c6e57', highlightthickness=1, bd = 2)  # Criando o frame.
         self.frame_list_times.place(x=10, y=10, width=200, height=360)  # Configurando o tamanho da tela.
 
         # Segundo frame que é responsável pela listagem de cada jogador do time.
-        self.frame_list_atleta = Frame(self.main, highlightbackground='black', highlightthickness=1)  # Criando o frame.
+        self.frame_list_atleta = Frame(self.main, highlightbackground='#6c6e57', highlightthickness=1, bd = 2)  # Criando o frame.
         self.frame_list_atleta.place(x=220, y=10, width=570, height=580)  # Configurando o tamanho da tela.
 
     def criando_botoes(self):
         self.connect()
+        time_lista = self.bd.database_search_arg("SHOW TABLES", ())# Buscando as tabelas do banco de dados.
+        button_add = Button(self.frame_list_times, text = "+", bd = 0, highlightthickness=0, font=("default", 22), fg = "#04d90b")
+        button_add.place(relx=0.001, rely=0.035, width= 30, height=30)
         titulo = Label(self.frame_list_times, text="Times", font=("default", 20))  # Objetivo do frame
-        titulo.place(relx=0.04, rely=0.025)  # Posição do texto.
-
-        # Código provisório enquanto não é realizada a conexão com o banco de dados
-        list_time = [{'nome': 'Faixa etária livre'}, {'nome': 'Sub 16'}]
+        titulo.place(relx=0.115, rely=0.025)  # Posição do texto.
 
         arrays = []  # Lista para registrar os botões criados.
         posicao = 0.14  # Posição do primeiro botão.
 
         # Laço de repetição que cria o botão com base nos dados
-        for i in list_time:  # Percorre cada item da lista:
-            for arquivo in i.items():
-                self.botao = Button(self.frame_list_times, text=arquivo[1], bd=0, highlightthickness=0, anchor='w', font=("default", 10))  # Criando o botão.
-                self.botao.place(relx=0.12, rely=posicao, width=120, height=20)  # Posicionando e especificando o tamanho dos botões.
+        for arquivo in time_lista:  # Percorre cada item da lista:
+            
+            self.botao = Button(self.frame_list_times, text=arquivo[0].replace("_", " ", 2), bd=0, highlightthickness=0, anchor='w', font=("default", 10))  # Criando o botão.
+            if arrays == []:
+                self.botao.place(relx=0.12, rely=posicao, width=len(arquivo[0]) * 8, height=20)  # Posicionando e especificando o tamanho dos botões.
+                posicao += 0.08  # Alterando a posição de referência para os botões não se sobreporem.
+                arrays.append(self.botao)  # Registrando o botão.
+            else:
+                self.botao.place(relx=0.12, rely=posicao, width=len(arquivo[0]) * 20, height=20)  # Posicionando e especificando o tamanho dos botões.
                 posicao += 0.08  # Alterando a posição de referência para os botões não se sobreporem.
                 arrays.append(self.botao)  # Registrando o botão.
 
     def connect(self):
-        self.bd = Database("muttsen", "root", "mysql", "localhost")
+        self.bd = Database()
         self.bd.connect()
 
     def disconnect(self):
