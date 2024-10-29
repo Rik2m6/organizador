@@ -1,62 +1,76 @@
 #importação das classes usadas.
-from tkinter import * ## Biblioteca nativa do python para criar interfaces graficas.
+from tkinter import *  ## Biblioteca nativa do python para criar interfaces graficas.
+from database.conect import Database
 
-#Classe principal aonde esta sendo criado os componentes da interface grafica.
+#Classe principal onde está sendo criado os componentes da interface gráfica.
 class Application():
     def __init__(self):
-        #Adicionando a janela principal ao codigo.
+        # Adicionando a janela principal ao código.
         self.main = main
+        
+        # Conectar ao banco de dados ao iniciar a aplicação
+        self.connect()  
 
-        #chamando cada metodo da classe.
-        self.main_canvas() #Metodo para configurar a janela principal.
-        self.frame_tela() #Metodo que cria cada frame da tela.
-        self.criando_botoes() #adic. botões aos frames. 
+        # Chamando cada método da classe.
+        self.main_canvas()  # Método para configurar a janela principal.
+        self.frame_tela()  # Método que cria cada frame da tela.
+        self.criando_botoes()  # Adiciona botões aos frames.
 
-        #Loop principal.
+        # Configurar o evento de fechamento da janela
+        self.main.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        # Loop principal.
         main.mainloop()
 
-    #Metodos da classe:
+    # Métodos da classe:
     def main_canvas(self):
-
-        self.main.title("Muts'sen") # Titulo da pagina que remete ao no do time.
-        self.main.geometry("800x600") #tamanho da janela que é 800 por 600.
-        self.main.resizable(False, False) #Fixando um tamanho e não permitindo alterações.
-        self.main.configure(background = "#f8faca") #alterando a cor da tela de fundo.
+        self.main.title("Muts'sen")  # Título da página que remete ao nome do time.
+        self.main.geometry("800x600")  # Tamanho da janela que é 800 por 600.
+        self.main.resizable(False, False)  # Fixando um tamanho e não permitindo alterações.
+        self.main.configure(background="#f8faca")  # Alterando a cor da tela de fundo.
 
     def frame_tela(self):
-        #Primeiro frame que é responsavel por acomodar a informações dos tipo de cada classificação dos times.
-        self.frame_list_times = Frame(self.main, highlightbackground = 'black', highlightthickness = 1) #Criando o frame e especificando o configurações da borda.
-        self.frame_list_times.place(x = 10, y = 10, width = 200, height= 360) #Configurando o tamanho da tela.
+        # Primeiro frame que é responsável por acomodar as informações dos tipos de cada classificação dos times.
+        self.frame_list_times = Frame(self.main, highlightbackground='black', highlightthickness=1)  # Criando o frame.
+        self.frame_list_times.place(x=10, y=10, width=200, height=360)  # Configurando o tamanho da tela.
 
-        #segundo frame que é responsavel pela a listagem de cada jogador do time.
-        self.frame_list_atleta = Frame(self.main, highlightbackground = 'black', highlightthickness = 1) #Criando o frame e especificando o configurações da borda.
-        self.frame_list_atleta.place(x = 220, y = 10, width = 570, height = 580)#Configurando o tamanho da tela.
+        # Segundo frame que é responsável pela listagem de cada jogador do time.
+        self.frame_list_atleta = Frame(self.main, highlightbackground='black', highlightthickness=1)  # Criando o frame.
+        self.frame_list_atleta.place(x=220, y=10, width=570, height=580)  # Configurando o tamanho da tela.
 
     def criando_botoes(self):
-        #Codigo provisorio enquanto não é realizado a conexão com o banco de dados
-        list_time = [{'nome': 'Faixa etaria livre'}, {'nome': 'Sub 16'}]
+        self.connect()
+        titulo = Label(self.frame_list_times, text="Times", font=("default", 20))  # Objetivo do frame
+        titulo.place(relx=0.04, rely=0.025)  # Posição do texto.
 
+        # Código provisório enquanto não é realizada a conexão com o banco de dados
+        list_time = [{'nome': 'Faixa etária livre'}, {'nome': 'Sub 16'}]
 
-        arrays = [] #Uma Lista para registrar os botões criados.
-        posicao = 0.08 #Posição do primeiro botão.
+        arrays = []  # Lista para registrar os botões criados.
+        posicao = 0.14  # Posição do primeiro botão.
 
-        #Laço de repetição que ira criar o botão com base nos dados puxado do banco de dados:
-        for i in list_time:# Pecorre cada item da lista:
-            #Laço de repetição que ira criar os botões percorrendo cada dicinarios lido pela a primeira lista, e tratando os dados como uma lista.
+        # Laço de repetição que cria o botão com base nos dados
+        for i in list_time:  # Percorre cada item da lista:
             for arquivo in i.items():
-                self.botao = Button(self.frame_list_times, text = arquivo[1], bd = 0, highlightthickness = 0, anchor = 'w') #Criando o primeiro botão mas ainda não adicionando ele a lista arrays.
-                if arrays == []: #Uma condicional para verificar se a lista está vazia.
+                self.botao = Button(self.frame_list_times, text=arquivo[1], bd=0, highlightthickness=0, anchor='w', font=("default", 10))  # Criando o botão.
+                self.botao.place(relx=0.12, rely=posicao, width=120, height=20)  # Posicionando e especificando o tamanho dos botões.
+                posicao += 0.08  # Alterando a posição de referência para os botões não se sobreporem.
+                arrays.append(self.botao)  # Registrando o botão.
 
-                    self.botao.place(relx = 0.05, rely = posicao, width = 120, height = 20) # Posiciando e especificando o tamanho  dos botôes.
-                    posicao += 0.08 #Alterando a posição de referencia para os botôes não se sobreporem.
-                    arrays.append(self.botao) #Registrando o botão.
-                else:
-                    self.botao.place(relx = 0.05, rely = posicao, width = 120, height = 20) # Posiciando e especificando o tamanho  dos botôes.
-                    posicao += 0.08 #Alterando a posição de referencia para os botôes não se sobreporem.
-                    arrays.append(self.botao) #Registrando o botão.
-                    
-#Incialiando a biclioteca no objeto que sera a tela principal.
+    def connect(self):
+        self.bd = Database("muttsen", "root", "mysql", "localhost")
+        self.bd.connect()
+
+    def disconnect(self):
+        if hasattr(self, 'bd'):
+            self.bd.disconnect()
+
+    def on_closing(self):
+        self.disconnect()  # Chama o método de desconexão
+        self.main.destroy()  # Fecha a janela
+
+# Inicializando a biblioteca no objeto que será a tela principal.
 main = Tk()
 
-#chamando a classe.
+# Chamando a classe.
 Application()
